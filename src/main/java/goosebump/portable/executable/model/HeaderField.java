@@ -5,7 +5,7 @@ package goosebump.portable.executable.model;
 /**
  * 
  */
-public enum PEHeaderField {
+public enum HeaderField {
   MACHINE,
   NUMBER_OF_SECTIONS,
   TIME_DATE_STAMP,

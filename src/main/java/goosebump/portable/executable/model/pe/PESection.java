@@ -2,14 +2,13 @@
 
 package goosebump.portable.executable.model.pe;
 
-import static goosebump.portable.executable.Constants.PE_SECTION_SIZE;
-import static goosebump.portable.executable.model.PEFieldData.value;
+import static goosebump.portable.executable.model.FieldData.value;
 import java.util.List;
 import java.util.Map;
-import goosebump.portable.executable.file.ByteOrderBuffer;
-import goosebump.portable.executable.model.PEFieldData;
-import goosebump.portable.executable.model.PESectionCharacteristic;
-import goosebump.portable.executable.model.PESectionField;
+import goosebump.portable.executable.file.SectionBuffer;
+import goosebump.portable.executable.model.FieldData;
+import goosebump.portable.executable.model.SectionCharacteristic;
+import goosebump.portable.executable.model.SectionField;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -22,17 +21,17 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class PESection {
   // @formatter:off
-  private static final Map<Enum<?>, PEFieldData> sectionData = Map.ofEntries(
-      value(PESectionField.NAME, 0, 8),
-      value(PESectionField.VIRTUAL_SIZE, 8, 4),
-      value(PESectionField.VIRTUAL_ADDRESS, 12, 4),
-      value(PESectionField.SIZE_OF_RAW_DATA, 16, 4),
-      value(PESectionField.POINTER_TO_RAW_DATA, 20, 4),
-      value(PESectionField.POINTER_TO_RELOCATIONS, 24, 4),
-      value(PESectionField.POINTER_TO_LINE_NUMBERS, 28, 4),
-      value(PESectionField.NUMBER_OF_RELOCATIONS, 32, 2),
-      value(PESectionField.NUMBER_OF_LINE_NUMBERS, 34, 2),
-      value(PESectionField.CHARACTERISTICS, 36, 4)
+  private static final Map<Enum<?>, FieldData> sectionData = Map.ofEntries(
+      value(SectionField.NAME, 0, 8),
+      value(SectionField.VIRTUAL_SIZE, 8, 4),
+      value(SectionField.VIRTUAL_ADDRESS, 12, 4),
+      value(SectionField.SIZE_OF_RAW_DATA, 16, 4),
+      value(SectionField.POINTER_TO_RAW_DATA, 20, 4),
+      value(SectionField.POINTER_TO_RELOCATIONS, 24, 4),
+      value(SectionField.POINTER_TO_LINE_NUMBERS, 28, 4),
+      value(SectionField.NUMBER_OF_RELOCATIONS, 32, 2),
+      value(SectionField.NUMBER_OF_LINE_NUMBERS, 34, 2),
+      value(SectionField.CHARACTERISTICS, 36, 4)
   );
   // @formatter:on
 
@@ -45,15 +44,13 @@ public class PESection {
   private long lineNumbersPointer;
   private int numberOfRelocations;
   private int numberOfLineNumbers;
-  private List<PESectionCharacteristic> characteristics;
+  private List<SectionCharacteristic> characteristics;
 
   /**
    * @param sectionTableBuffer
    * @param sectionOffset
    */
-  public PESection(ByteOrderBuffer sectionTableBuffer, int sectionOffset) {
-    byte[] bytes = sectionTableBuffer.bytes(sectionOffset, PE_SECTION_SIZE);
-    ByteOrderBuffer sectionBuffer = new ByteOrderBuffer(bytes, sectionTableBuffer.getByteOrder());
+  public PESection(SectionBuffer sectionBuffer) {
     name = readSectionName(sectionBuffer);
     virtualSize = readVirtualSize(sectionBuffer);
     virtualAddress = readVirtualAddress(sectionBuffer);
@@ -66,58 +63,40 @@ public class PESection {
     characteristics = readCharacteristics(sectionBuffer);
   }
 
- /**
+  /**
    * @param sectionBuffer
    * @return
    */
-  private List<PESectionCharacteristic> readCharacteristics(ByteOrderBuffer sectionBuffer) {
-    PEFieldData data = sectionData.get(PESectionField.CHARACTERISTICS);
+  private List<SectionCharacteristic> readCharacteristics(SectionBuffer sectionBuffer) {
+    FieldData data = sectionData.get(SectionField.CHARACTERISTICS);
     int flags = sectionBuffer.readInt(data.getOffset());
-    return PESectionCharacteristic.allCharacteristicsIn(flags);
+    return SectionCharacteristic.allCharacteristicsIn(flags);
   }
 
-/**
+  /**
    * @param sectionBuffer
    * @return
    */
-  private int readNumberOfLineNumbers(ByteOrderBuffer sectionBuffer) {
-    PEFieldData data = sectionData.get(PESectionField.NUMBER_OF_LINE_NUMBERS);
+  private int readNumberOfLineNumbers(SectionBuffer sectionBuffer) {
+    FieldData data = sectionData.get(SectionField.NUMBER_OF_LINE_NUMBERS);
     return sectionBuffer.readUnsignedShort(data.getOffset());
   }
 
-/**
+  /**
    * @param sectionBuffer
    * @return
    */
-  private int readNumberOfRelocations(ByteOrderBuffer sectionBuffer) {
-    PEFieldData data = sectionData.get(PESectionField.NUMBER_OF_RELOCATIONS);
+  private int readNumberOfRelocations(SectionBuffer sectionBuffer) {
+    FieldData data = sectionData.get(SectionField.NUMBER_OF_RELOCATIONS);
     return sectionBuffer.readUnsignedShort(data.getOffset());
   }
 
-/**
+  /**
    * @param sectionBuffer
    * @return
    */
-  private long readLineNumbersPointer(ByteOrderBuffer sectionBuffer) {
-    PEFieldData data = sectionData.get(PESectionField.POINTER_TO_LINE_NUMBERS);
-    return sectionBuffer.readUnsignedInt(data.getOffset());
-  }
-
-/**
-   * @param sectionBuffer
-   * @return
-   */
-  private long readRelocationsPointer(ByteOrderBuffer sectionBuffer) {
-    PEFieldData data = sectionData.get(PESectionField.POINTER_TO_RELOCATIONS);
-    return sectionBuffer.readUnsignedInt(data.getOffset());
-  }
-
- /**
-   * @param sectionBuffer
-   * @return
-   */
-  private long readRawDataPointer(ByteOrderBuffer sectionBuffer) {
-    PEFieldData data = sectionData.get(PESectionField.POINTER_TO_RAW_DATA);
+  private long readLineNumbersPointer(SectionBuffer sectionBuffer) {
+    FieldData data = sectionData.get(SectionField.POINTER_TO_LINE_NUMBERS);
     return sectionBuffer.readUnsignedInt(data.getOffset());
   }
 
@@ -125,8 +104,8 @@ public class PESection {
    * @param sectionBuffer
    * @return
    */
-  private long readRawDataSize(ByteOrderBuffer sectionBuffer) {
-    PEFieldData data = sectionData.get(PESectionField.SIZE_OF_RAW_DATA);
+  private long readRelocationsPointer(SectionBuffer sectionBuffer) {
+    FieldData data = sectionData.get(SectionField.POINTER_TO_RELOCATIONS);
     return sectionBuffer.readUnsignedInt(data.getOffset());
   }
 
@@ -134,8 +113,8 @@ public class PESection {
    * @param sectionBuffer
    * @return
    */
-  private long readVirtualAddress(ByteOrderBuffer sectionBuffer) {
-    PEFieldData data = sectionData.get(PESectionField.VIRTUAL_ADDRESS);
+  private long readRawDataPointer(SectionBuffer sectionBuffer) {
+    FieldData data = sectionData.get(SectionField.POINTER_TO_RAW_DATA);
     return sectionBuffer.readUnsignedInt(data.getOffset());
   }
 
@@ -143,8 +122,26 @@ public class PESection {
    * @param sectionBuffer
    * @return
    */
-  private long readVirtualSize(ByteOrderBuffer sectionBuffer) {
-    PEFieldData data = sectionData.get(PESectionField.VIRTUAL_SIZE);
+  private long readRawDataSize(SectionBuffer sectionBuffer) {
+    FieldData data = sectionData.get(SectionField.SIZE_OF_RAW_DATA);
+    return sectionBuffer.readUnsignedInt(data.getOffset());
+  }
+
+  /**
+   * @param sectionBuffer
+   * @return
+   */
+  private long readVirtualAddress(SectionBuffer sectionBuffer) {
+    FieldData data = sectionData.get(SectionField.VIRTUAL_ADDRESS);
+    return sectionBuffer.readUnsignedInt(data.getOffset());
+  }
+
+  /**
+   * @param sectionBuffer
+   * @return
+   */
+  private long readVirtualSize(SectionBuffer sectionBuffer) {
+    FieldData data = sectionData.get(SectionField.VIRTUAL_SIZE);
     return sectionBuffer.readUnsignedInt(data.getOffset());
   }
 
@@ -153,12 +150,12 @@ public class PESection {
    * @param sectionOffset
    * @return
    */
-  private String readSectionName(ByteOrderBuffer sectionBuffer) {
-    PEFieldData data = sectionData.get(PESectionField.NAME);
+  private String readSectionName(SectionBuffer sectionBuffer) {
+    FieldData data = sectionData.get(SectionField.NAME);
     byte[] buffer = sectionBuffer.bytes(data.getOffset(), data.getSize());
 
-    for (int size = 0; size < buffer.length; size++) {
-      if (buffer[size] == 0) {
+    for(int size = 0; size < buffer.length; size++) {
+      if(buffer[size] == 0) {
         return new String(buffer, 0, size);
       }
     }

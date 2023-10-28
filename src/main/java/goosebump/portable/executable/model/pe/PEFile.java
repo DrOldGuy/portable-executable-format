@@ -2,21 +2,12 @@
 
 package goosebump.portable.executable.model.pe;
 
-import static goosebump.portable.executable.Constants.PE_HEADER_SIZE;
-import static goosebump.portable.executable.Constants.PE_SECTION_SIZE;
-import static goosebump.portable.executable.Constants.PE_SIGNATURE;
-import static goosebump.portable.executable.Constants.PE_SIGNATURE_LOCATION;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.file.Path;
-import java.util.Arrays;
-import goosebump.portable.executable.exception.PEFileException;
-import goosebump.portable.executable.exception.PESignatureException;
 import goosebump.portable.executable.file.ByteOrderBuffer;
-import goosebump.portable.executable.file.PEReader;
-import goosebump.portable.executable.model.PEMachineType;
-import goosebump.portable.executable.model.pe.factory.PEOptionalHeaderFactory;
+import goosebump.portable.executable.file.PEFileReader;
+import goosebump.portable.executable.file.PEFileReader.ExportBuffers;
+import goosebump.portable.executable.file.SectionTableBuffer;
+import goosebump.portable.executable.model.pe.factory.OptionalHeaderFactory;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -24,23 +15,14 @@ import lombok.ToString;
 /**
  * 
  */
+@Getter
 @ToString
 @EqualsAndHashCode()
 public class PEFile {
-  @Getter
-  private PEHeader peHeader;
-
-  @Getter
-  private PEOptionalHeader peOptionalHeader;
-
-  @Getter
-  private PESectionTable peSectionTable;
-
-  private ByteOrder byteOrder;
-  private long signatureOffset;
-  private long headerOffset;
-  private long optionalHeaderOffset;
-  private long sectionTableOffset;
+  private PEHeader header;
+  private PEOptionalHeader optionalHeader;
+  private PESectionTable sectionTable;
+  private PEExports exports;
 
   /**
    * Create and initialize the PEFile object.
@@ -55,16 +37,21 @@ public class PEFile {
    * Read and parse the contents of the DLL file.
    */
   private void readandParsePEFile(Path path) {
-    try (PEReader reader = new PEReader(path)) {
-      readAndVerifySignature(reader);
-
-      peHeader = readHeader(reader);
-      peOptionalHeader = readOptionalHeader(reader);
-      peSectionTable = readSectionTable(reader);
-
-    } catch (IOException e) {
-      throw new PEFileException(e);
+    try(PEFileReader reader = new PEFileReader(path)) {
+      header = readHeader(reader);
+      optionalHeader = readOptionalHeader(reader);
+      sectionTable = readSectionTable(reader);
+      exports = readExports(reader);
     }
+  }
+
+  /**
+   * @param reader
+   * @return
+   */
+  private PEExports readExports(PEFileReader reader) {
+    ExportBuffers buffers = reader.readExportBuffers();
+    return new PEExports(buffers);
   }
 
   /**
@@ -72,123 +59,29 @@ public class PEFile {
    * @param reader
    * @return
    */
-  private PEHeader readHeader(PEReader reader) {
-    try {
-      headerOffset = signatureOffset + PE_SIGNATURE.length;
-      byte[] headerBytes = reader.readBytes(headerOffset, PE_HEADER_SIZE);
-
-      byteOrder = checkByteOrder(headerBytes);
-      ByteOrderBuffer headerBuffer = new ByteOrderBuffer(headerBytes, byteOrder);
-
-      return new PEHeader(headerBuffer);
-    } catch (IOException e) {
-      throw new PEFileException(e, reader.getPath(), headerOffset, PE_HEADER_SIZE);
-    }
+  private PEHeader readHeader(PEFileReader reader) {
+    ByteOrderBuffer buffer = reader.readHeaderBuffer();
+    return new PEHeader(buffer);
   }
 
   /**
+   * 
    * @param reader
-   * @param signatureOffset
-   * @return
-   * @throws IOException
-   */
-  private void readAndVerifySignature(PEReader reader) {
-    try {
-      readSignatureOffset(reader);
-
-      byte[] signatureBytes = reader.readBytes(signatureOffset, PE_SIGNATURE.length);
-
-      if (!Arrays.equals(signatureBytes, PE_SIGNATURE)) {
-        throw new PESignatureException(
-            reader.getPath() + " is not a valid DLL (signature mismatch)");
-      }
-
-    } catch (IOException e) {
-      throw new PEFileException(e, reader.getPath(), headerOffset, PE_SIGNATURE.length);
-    }
-
-  }
-
-  /**
-   * @param reader
-   * @throws IOException
-   */
-  private void readSignatureOffset(PEReader reader) {
-    try {
-      signatureOffset = reader.readUnsignedByteAt(PE_SIGNATURE_LOCATION);
-    } catch (IOException e) {
-      throw new PEFileException(e, reader.getPath(), PE_SIGNATURE_LOCATION, Byte.BYTES);
-    }
-  }
-
-  /**
-   * @param reader
-   * @param peHeaderOffset
-   * @param byteOrder
-   * @param peHeader
    * @return
    */
-  private PESectionTable readSectionTable(PEReader reader) {
-    sectionTableOffset = optionalHeaderOffset + peHeader.getSizeOfOptionalHeader();
-    int sectionTableLength = peHeader.getNumberOfSections() * PE_SECTION_SIZE;
-
-    try {
-      byte[] sectionTableBytes = reader.readBytes(sectionTableOffset, sectionTableLength);
-      ByteOrderBuffer sectionTableBuffer = new ByteOrderBuffer(sectionTableBytes, byteOrder);
-      return new PESectionTable(sectionTableBuffer, peHeader.getNumberOfSections());
-
-    } catch (IOException e) {
-      throw new PEFileException(e, reader.getPath(), sectionTableOffset, sectionTableLength);
-    }
+  private PEOptionalHeader readOptionalHeader(PEFileReader reader) {
+    ByteOrderBuffer buffer = reader.readOptionalBuffer();
+    return OptionalHeaderFactory.createOptionalHeader(buffer);
   }
 
   /**
+   * 
    * @param reader
-   * @param peHeaderOffset
-   * @param byteOrder
-   */
-  private PEOptionalHeader readOptionalHeader(PEReader reader) {
-    try {
-      optionalHeaderOffset = headerOffset + PE_HEADER_SIZE;
-
-      byte[] buffer = new byte[peHeader.getSizeOfOptionalHeader()];
-
-      reader.seek(optionalHeaderOffset);
-      reader.readFully(buffer);
-
-      ByteOrderBuffer optionalHeaderBuffer = new ByteOrderBuffer(buffer, byteOrder);
-      return PEOptionalHeaderFactory.createOptionalHeader(optionalHeaderBuffer);
-
-    } catch (IOException e) {
-      throw new PEFileException(e);
-    }
-
-  }
-
-  /**
-   * @param content
-   */
-  private ByteOrder checkByteOrder(byte[] content) {
-    PEMachineType type = readMachineType(content);
-
-    if (type == PEMachineType.IMAGE_FILE_MACHINE_UNKNOWN) {
-      return ByteOrder.LITTLE_ENDIAN;
-    }
-
-    return ByteOrder.BIG_ENDIAN;
-  }
-
-  /**
-   * @param content
    * @return
    */
-  private PEMachineType readMachineType(byte[] content) {
-    ByteBuffer buffer = ByteBuffer.allocate(Short.BYTES);
-
-    buffer.put(content, PE_SIGNATURE.length, Short.BYTES);
-    buffer.rewind();
-    short value = buffer.getShort();
-
-    return PEMachineType.valueOf(value);
+  private PESectionTable readSectionTable(PEFileReader reader) {
+    SectionTableBuffer buffer = reader.readSectionTableBuffer();
+    return new PESectionTable(buffer);
   }
+
 }

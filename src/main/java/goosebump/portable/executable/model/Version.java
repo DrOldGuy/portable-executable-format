@@ -8,7 +8,7 @@ import lombok.Value;
  * 
  */
 @Value
-public class PEVersion {
+public class Version {
   private int major;
   private int minor;
 }

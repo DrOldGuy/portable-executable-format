@@ -5,6 +5,9 @@ package goosebump.portable.executable.file;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import lombok.Getter;
 
@@ -13,10 +16,15 @@ import lombok.Getter;
  * little endian).
  */
 public class ByteOrderBuffer {
+  private static final String UTC_TIME_ZONE = "UTC";
+
   @Getter
   private ByteOrder byteOrder;
 
   private byte[] buffer;
+  
+  @Getter
+  private int length;
 
   /**
    * Create and initialize a new buffer object.
@@ -27,6 +35,7 @@ public class ByteOrderBuffer {
   public ByteOrderBuffer(byte[] buffer, ByteOrder byteOrder) {
     this.buffer = buffer;
     this.byteOrder = byteOrder;
+    this.length = buffer.length;
   }
 
   /**
@@ -110,7 +119,7 @@ public class ByteOrderBuffer {
 
     long value = bytes.getLong();
 
-    if (value > -0L) {
+    if(value > -0L) {
       return BigInteger.valueOf(value);
     }
 
@@ -123,6 +132,7 @@ public class ByteOrderBuffer {
 
   /**
    * Returns a subset of the buffer at the given offset and size.
+   * 
    * @param offset
    * @param size
    * @return
@@ -139,4 +149,21 @@ public class ByteOrderBuffer {
     return "ByteOrderBuffer [byteOrder=" + byteOrder + ", buffer=" + Arrays.toString(buffer) + "]";
   }
 
+  /**
+   * @param offset
+   * @return
+   */
+  public LocalDateTime readTimestamp(int offset) {
+    long seconds = readUnsignedInt(offset);
+    long millis = seconds * 1000;
+
+    return Instant.ofEpochMilli(millis).atZone(ZoneId.of(UTC_TIME_ZONE)).toLocalDateTime();
+  }
+
+  /**
+   * @return
+   */
+  public byte[] bytes() {
+    return Arrays.copyOf(buffer, buffer.length);
+  }
 }

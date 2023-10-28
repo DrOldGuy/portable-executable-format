@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * These can be combined in the characteristics flag field.
  */
-public enum PEHeaderCharacteristic {
+public enum HeaderCharacteristic {
   // @formatter:off
   IMAGE_FILE_RELOCS_STRIPPED(0x0001),
   IMAGE_FILE_EXECUTABLE_IMAGE(0x0002),
@@ -30,7 +30,7 @@ public enum PEHeaderCharacteristic {
 
   int flag;
 
-  private PEHeaderCharacteristic(int flag) {
+  private HeaderCharacteristic(int flag) {
     this.flag = flag;
   }
 
@@ -55,10 +55,10 @@ public enum PEHeaderCharacteristic {
    * @param flag The flag to test
    * @return A list of present characteristics
    */
-  public static List<PEHeaderCharacteristic> allCharacteristicsIn(int flag) {
-    List<PEHeaderCharacteristic> characteristics = new LinkedList<>();
+  public static List<HeaderCharacteristic> allCharacteristicsIn(int flag) {
+    List<HeaderCharacteristic> characteristics = new LinkedList<>();
 
-    for (PEHeaderCharacteristic ch : PEHeaderCharacteristic.values()) {
+    for (HeaderCharacteristic ch : HeaderCharacteristic.values()) {
       if (ch.isPresentIn(flag)) {
         characteristics.add(ch);
       }

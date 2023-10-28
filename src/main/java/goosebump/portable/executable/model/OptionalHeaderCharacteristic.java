@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * 
  */
-public enum PEOptionalHeaderCharacteristic {
+public enum OptionalHeaderCharacteristic {
   // @formatter:off
   IMAGE_DLLCHARACTERISTICS_HIGH_ENTROPY_VA(0x0020),
   IMAGE_DLLCHARACTERISTICS_DYNAMIC_BASE(0x0040),
@@ -30,7 +30,7 @@ public enum PEOptionalHeaderCharacteristic {
    * 
    * @param value
    */
-  private PEOptionalHeaderCharacteristic(int value) {
+  private OptionalHeaderCharacteristic(int value) {
     this.flag = value;
   }
 
@@ -64,10 +64,10 @@ public enum PEOptionalHeaderCharacteristic {
    * @param flag The flag to test
    * @return A list of present characteristics
    */
-  public static List<PEOptionalHeaderCharacteristic> allCharacteristicsIn(int flag) {
-    List<PEOptionalHeaderCharacteristic> characteristics = new LinkedList<>();
+  public static List<OptionalHeaderCharacteristic> allCharacteristicsIn(int flag) {
+    List<OptionalHeaderCharacteristic> characteristics = new LinkedList<>();
 
-    for (PEOptionalHeaderCharacteristic characteristic : PEOptionalHeaderCharacteristic.values()) {
+    for (OptionalHeaderCharacteristic characteristic : OptionalHeaderCharacteristic.values()) {
       if (characteristic.isPresentIn(flag)) {
         characteristics.add(characteristic);
       }

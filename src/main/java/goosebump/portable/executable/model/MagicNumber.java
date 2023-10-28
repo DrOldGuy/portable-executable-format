@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
 /**
  * 
  */
-public enum PEMagicNumber {
+public enum MagicNumber {
   // @formatter:off
   PE_OPTIONAL_HEADER_UNKNOWN(0x0000),
   PE_OPTIONAL_HEADER_STD(0x010b),
@@ -16,7 +16,7 @@ public enum PEMagicNumber {
 
   private short value;
 
-  private PEMagicNumber(int value) {
+  private MagicNumber(int value) {
     byte[] bytes = {(byte)((value >> 8) & 0x000000ff), (byte)(value & 0x000000ff)};
     ByteBuffer buffer = ByteBuffer.allocate(Short.BYTES);
 
@@ -31,10 +31,10 @@ public enum PEMagicNumber {
    * @param value
    * @return
    */
-  public static PEMagicNumber valueOf(int value) {
+  public static MagicNumber valueOf(int value) {
     short shValue = (short)value;
 
-    for (PEMagicNumber mn : PEMagicNumber.values()) {
+    for (MagicNumber mn : MagicNumber.values()) {
       if (shValue == mn.value) {
         return mn;
       }

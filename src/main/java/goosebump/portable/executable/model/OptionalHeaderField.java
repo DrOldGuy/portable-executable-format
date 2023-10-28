@@ -5,7 +5,7 @@ package goosebump.portable.executable.model;
 /**
  * 
  */
-public enum PEOptionalHeaderField {
+public enum OptionalHeaderField {
   // @formatter:off
   MAGIC_NUMBER,
   MAJOR_LINKER_VERSION,

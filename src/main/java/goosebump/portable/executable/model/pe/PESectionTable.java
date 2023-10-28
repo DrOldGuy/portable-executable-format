@@ -2,9 +2,9 @@
 
 package goosebump.portable.executable.model.pe;
 
-import static goosebump.portable.executable.Constants.PE_SECTION_SIZE;
 import java.util.TreeMap;
-import goosebump.portable.executable.file.ByteOrderBuffer;
+import goosebump.portable.executable.file.SectionBuffer;
+import goosebump.portable.executable.file.SectionTableBuffer;
 
 /**
  * 
@@ -15,14 +15,10 @@ public class PESectionTable extends TreeMap<String, PESection> {
   /**
    * @param sectionTableBuffer
    */
-  public PESectionTable(ByteOrderBuffer sectionTableBuffer, int numSections) {
-    int sectionOffset = 0;
-    
-    for(int sectionNo = 0; sectionNo < numSections; sectionNo++) {
-      PESection section = new PESection(sectionTableBuffer, sectionOffset);
+  public PESectionTable(SectionTableBuffer sectionTableBuffer) {
+    for(SectionBuffer buffer : sectionTableBuffer) {
+      PESection section = new PESection(buffer);
       put(section.getName(), section);
-      
-      sectionOffset += PE_SECTION_SIZE;
     }
   }
 

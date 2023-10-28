@@ -10,21 +10,21 @@ import lombok.Value;
  */
 @Value
 @Builder
-public class PEDirectoryTable {
-  private PEDirectory exports;
-  private PEDirectory imports;
-  private PEDirectory resources;
-  private PEDirectory exceptions;
-  private PEDirectory certificates;
-  private PEDirectory relocations;
-  private PEDirectory debugData;
-  private PEDirectory architecture;
-  private PEDirectory globalPointer;
-  private PEDirectory threadLocalStorage;
-  private PEDirectory loadConfiguration;
-  private PEDirectory boundImport;
-  private PEDirectory importAddress;
-  private PEDirectory delayImportDescriptor;
-  private PEDirectory clrRuntimeHeader;
-  private PEDirectory reserved;
+public class DirectoryTable {
+  private Directory exports;
+  private Directory imports;
+  private Directory resources;
+  private Directory exceptions;
+  private Directory certificates;
+  private Directory relocations;
+  private Directory debugData;
+  private Directory architecture;
+  private Directory globalPointer;
+  private Directory threadLocalStorage;
+  private Directory loadConfiguration;
+  private Directory boundImport;
+  private Directory importAddress;
+  private Directory delayImportDescriptor;
+  private Directory clrRuntimeHeader;
+  private Directory reserved;
 }

@@ -5,7 +5,7 @@ package goosebump.portable.executable.model;
 /**
  * 
  */
-public enum PEWindowsSubsystem {
+public enum WindowsSubsystem {
   // @formatter:off
   IMAGE_SUBSYSTEM_UNKNOWN(0),
   IMAGE_SUBSYSTEM_NATIVE(1),
@@ -26,7 +26,7 @@ public enum PEWindowsSubsystem {
 
   private int value;
 
-  private PEWindowsSubsystem(int value) {
+  private WindowsSubsystem(int value) {
     this.value = value;
   }
 
@@ -36,8 +36,8 @@ public enum PEWindowsSubsystem {
    * @param value
    * @return
    */
-  public static PEWindowsSubsystem valueOf(int value) {
-    for (PEWindowsSubsystem subsystem : PEWindowsSubsystem.values()) {
+  public static WindowsSubsystem valueOf(int value) {
+    for (WindowsSubsystem subsystem : WindowsSubsystem.values()) {
       if (subsystem.value == value) {
         return subsystem;
       }

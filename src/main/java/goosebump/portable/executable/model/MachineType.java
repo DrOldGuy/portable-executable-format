@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
  * <a href="https://learn.microsoft.com/en-us/windows/win32/debug/pe-format#machine-types">Windows
  * documentation</a>.
  */
-public enum PEMachineType {
+public enum MachineType {
   // @formatter:off
   IMAGE_FILE_MACHINE_UNKNOWN(0x0000),
   IMAGE_FILE_MACHINE_ALPHA(0x0184),
@@ -50,7 +50,7 @@ public enum PEMachineType {
    * 
    * @param value
    */
-  private PEMachineType(int value) {
+  private MachineType(int value) {
     byte[] bytes = {(byte)((value >> 8) & 0x000000ff), (byte)(value & 0x000000ff)};
     ByteBuffer buffer = ByteBuffer.allocate(Short.BYTES);
 
@@ -65,10 +65,10 @@ public enum PEMachineType {
    * @param value
    * @return
    */
-  public static PEMachineType valueOf(int value) {
+  public static MachineType valueOf(int value) {
     short shValue = (short)value;
 
-    for (PEMachineType machineType : PEMachineType.values()) {
+    for (MachineType machineType : MachineType.values()) {
       if (shValue == machineType.value) {
         return machineType;
       }

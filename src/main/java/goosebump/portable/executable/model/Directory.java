@@ -8,7 +8,7 @@ import lombok.Value;
  * 
  */
 @Value
-public class PEDirectory {
+public class Directory {
   private long virtualAddress;
   private long size;
 }

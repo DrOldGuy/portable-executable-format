@@ -4,7 +4,7 @@ package goosebump.portable.executable.model.pe.factory;
 
 import goosebump.portable.executable.exception.PESignatureException;
 import goosebump.portable.executable.file.ByteOrderBuffer;
-import goosebump.portable.executable.model.PEMagicNumber;
+import goosebump.portable.executable.model.MagicNumber;
 import goosebump.portable.executable.model.pe.PEOptionalHeader;
 import goosebump.portable.executable.model.pe.PEOptionalHeaderPlus;
 import goosebump.portable.executable.model.pe.PEOptionalHeaderStd;
@@ -12,7 +12,7 @@ import goosebump.portable.executable.model.pe.PEOptionalHeaderStd;
 /**
  * 
  */
-public abstract class PEOptionalHeaderFactory {
+public abstract class OptionalHeaderFactory {
 
   /**
    * @param buffer
@@ -21,7 +21,7 @@ public abstract class PEOptionalHeaderFactory {
   public static PEOptionalHeader createOptionalHeader(ByteOrderBuffer buffer) {
     int value = buffer.readUnsignedShort(0);
     
-    switch(PEMagicNumber.valueOf(value)) {
+    switch(MagicNumber.valueOf(value)) {
       case PE_OPTIONAL_HEADER_PLUS:
         return new PEOptionalHeaderPlus(buffer);
         

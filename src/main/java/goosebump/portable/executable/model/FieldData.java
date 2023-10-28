@@ -10,12 +10,12 @@ import lombok.Value;
  * 
  */
 @Value
-public class PEFieldData {
+public class FieldData {
   private Enum<?> field;
   private int offset;
   private int size;
 
-  public static Entry<Enum<?>, PEFieldData> value(Enum<?> field, int offset, int size) {
-    return new SimpleEntry<Enum<?>, PEFieldData>(field, new PEFieldData(field, offset, size));
+  public static Entry<Enum<?>, FieldData> value(Enum<?> field, int offset, int size) {
+    return new SimpleEntry<Enum<?>, FieldData>(field, new FieldData(field, offset, size));
   }
 }

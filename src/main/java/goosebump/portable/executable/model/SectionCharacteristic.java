@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * 
  */
-public enum PESectionCharacteristic {
+public enum SectionCharacteristic {
   // @formatter:off
   
   IMAGE_SCN_TYPE_NO_PAD(0x00000008),
@@ -55,7 +55,7 @@ public enum PESectionCharacteristic {
    * 
    * @param value
    */
-  private PESectionCharacteristic(int value) {
+  private SectionCharacteristic(int value) {
     this.flag = value;
   }
 
@@ -89,10 +89,10 @@ public enum PESectionCharacteristic {
    * @param flag The flag to test
    * @return A list of present characteristics
    */
-  public static List<PESectionCharacteristic> allCharacteristicsIn(int flag) {
-    List<PESectionCharacteristic> characteristics = new LinkedList<>();
+  public static List<SectionCharacteristic> allCharacteristicsIn(int flag) {
+    List<SectionCharacteristic> characteristics = new LinkedList<>();
 
-    for (PESectionCharacteristic characteristic : PESectionCharacteristic.values()) {
+    for (SectionCharacteristic characteristic : SectionCharacteristic.values()) {
       if (characteristic.isPresentIn(flag)) {
         characteristics.add(characteristic);
       }

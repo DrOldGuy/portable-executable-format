@@ -2,18 +2,15 @@
 
 package goosebump.portable.executable.model.pe;
 
-import static goosebump.portable.executable.Constants.UTC_TIME_ZONE;
-import static goosebump.portable.executable.model.PEFieldData.value;
-import java.time.Instant;
+import static goosebump.portable.executable.model.FieldData.value;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import goosebump.portable.executable.file.ByteOrderBuffer;
-import goosebump.portable.executable.model.PEFieldData;
-import goosebump.portable.executable.model.PEHeaderCharacteristic;
-import goosebump.portable.executable.model.PEHeaderField;
-import goosebump.portable.executable.model.PEMachineType;
+import goosebump.portable.executable.model.FieldData;
+import goosebump.portable.executable.model.HeaderCharacteristic;
+import goosebump.portable.executable.model.HeaderField;
+import goosebump.portable.executable.model.MachineType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -25,24 +22,25 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class PEHeader {
-  private static final Map<Enum<?>, PEFieldData> headerData = Map.ofEntries(
   // @formatter:off
-      value(PEHeaderField.MACHINE, 0, 2), 
-      value(PEHeaderField.NUMBER_OF_SECTIONS, 2, 2),
-      value(PEHeaderField.TIME_DATE_STAMP, 4, 4), 
-      value(PEHeaderField.POINTER_TO_SYMBOL_TABLE, 8, 4),
-      value(PEHeaderField.NUMBER_OF_SYMBOLS, 12, 4),
-      value(PEHeaderField.SIZE_OF_OPTIONAL_HEADER, 16, 2),
-      value(PEHeaderField.CHARACTERISTICS, 18, 2));
+  private static final Map<Enum<?>, FieldData> headerData = Map.ofEntries(
+      value(HeaderField.MACHINE, 0, 2), 
+      value(HeaderField.NUMBER_OF_SECTIONS, 2, 2),
+      value(HeaderField.TIME_DATE_STAMP, 4, 4), 
+      value(HeaderField.POINTER_TO_SYMBOL_TABLE, 8, 4),
+      value(HeaderField.NUMBER_OF_SYMBOLS, 12, 4),
+      value(HeaderField.SIZE_OF_OPTIONAL_HEADER, 16, 2),
+      value(HeaderField.CHARACTERISTICS, 18, 2)
+  );
   // @formatter:on
 
-  private PEMachineType machineType;
+  private MachineType machineType;
   private int numberOfSections;
   private LocalDateTime timestamp;
   private int symbolTableOffset;
   private int numberOfSymbols;
   private int sizeOfOptionalHeader;
-  private List<PEHeaderCharacteristic> characteristics;
+  private List<HeaderCharacteristic> characteristics;
 
   /**
    * Create and initialize the header object.
@@ -63,10 +61,10 @@ public class PEHeader {
    * @param buffer
    * @return
    */
-  private List<PEHeaderCharacteristic> readCharacteristics(ByteOrderBuffer buffer) {
-    PEFieldData data = headerData.get(PEHeaderField.CHARACTERISTICS);
+  private List<HeaderCharacteristic> readCharacteristics(ByteOrderBuffer buffer) {
+    FieldData data = headerData.get(HeaderField.CHARACTERISTICS);
     short value = buffer.readShort(data.getOffset());
-    return PEHeaderCharacteristic.allCharacteristicsIn(value);
+    return HeaderCharacteristic.allCharacteristicsIn(value);
   }
 
   /**
@@ -74,7 +72,7 @@ public class PEHeader {
    * @return
    */
   private int readSizeOfOptionalHeader(ByteOrderBuffer buffer) {
-    PEFieldData data = headerData.get(PEHeaderField.SIZE_OF_OPTIONAL_HEADER);
+    FieldData data = headerData.get(HeaderField.SIZE_OF_OPTIONAL_HEADER);
     return buffer.readUnsignedShort(data.getOffset());
   }
 
@@ -83,7 +81,7 @@ public class PEHeader {
    * @return
    */
   private int readNumberOfSymbols(ByteOrderBuffer buffer) {
-    PEFieldData data = headerData.get(PEHeaderField.NUMBER_OF_SYMBOLS);
+    FieldData data = headerData.get(HeaderField.NUMBER_OF_SYMBOLS);
     return buffer.readInt(data.getOffset());
   }
 
@@ -92,7 +90,7 @@ public class PEHeader {
    * @return
    */
   private int readSymbolTableOffset(ByteOrderBuffer buffer) {
-    PEFieldData data = headerData.get(PEHeaderField.POINTER_TO_SYMBOL_TABLE);
+    FieldData data = headerData.get(HeaderField.POINTER_TO_SYMBOL_TABLE);
     return buffer.readInt(data.getOffset());
   }
 
@@ -105,11 +103,8 @@ public class PEHeader {
    * @return
    */
   private LocalDateTime readTimestamp(ByteOrderBuffer buffer) {
-    PEFieldData data = headerData.get(PEHeaderField.TIME_DATE_STAMP);
-    long seconds = buffer.readUnsignedInt(data.getOffset());
-    long millis = seconds * 1000;
-
-    return Instant.ofEpochMilli(millis).atZone(ZoneId.of(UTC_TIME_ZONE)).toLocalDateTime();
+    FieldData data = headerData.get(HeaderField.TIME_DATE_STAMP);
+    return buffer.readTimestamp(data.getOffset());
   }
 
   /**
@@ -117,7 +112,7 @@ public class PEHeader {
    * @return
    */
   private int readNumberOfSections(ByteOrderBuffer buffer) {
-    PEFieldData data = headerData.get(PEHeaderField.NUMBER_OF_SECTIONS);
+    FieldData data = headerData.get(HeaderField.NUMBER_OF_SECTIONS);
     return buffer.readShort(data.getOffset());
   }
 
@@ -125,10 +120,10 @@ public class PEHeader {
    * @param buffer
    * @return
    */
-  private PEMachineType readMachineType(ByteOrderBuffer buffer) {
-    PEFieldData data = headerData.get(PEHeaderField.MACHINE);
+  private MachineType readMachineType(ByteOrderBuffer buffer) {
+    FieldData data = headerData.get(HeaderField.MACHINE);
     int value = buffer.readShort(data.getOffset());
-    return PEMachineType.valueOf(value);
+    return MachineType.valueOf(value);
   }
 
 }

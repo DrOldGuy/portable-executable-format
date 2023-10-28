@@ -5,7 +5,7 @@ package goosebump.portable.executable.model;
 /**
  * 
  */
-public enum PESectionField {
+public enum SectionField {
   // @formatter:off
   NAME,
   VIRTUAL_SIZE,

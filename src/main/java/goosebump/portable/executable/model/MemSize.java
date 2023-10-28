@@ -9,7 +9,7 @@ import lombok.Value;
  * 
  */
 @Value
-public class PEMemSize {
+public class MemSize {
   private BigInteger reserve;
   private BigInteger commit;
 }
