@@ -15,7 +15,9 @@ import com.goosebumpdesigns.pe.model.type.FieldData;
 import lombok.Getter;
 
 /**
- * 
+ * This class contains data from the exports section of a Personal Executable (Microsoft Dynamic
+ * Link Library or .exe file). It contains the common exports header as well as the export names and
+ * ordinal values.
  */
 @Getter
 public class PEExports {
@@ -38,30 +40,35 @@ public class PEExports {
   private int exportFlags;
   private LocalDateTime timestamp;
   private Version version;
-  private String name;
+  private String fileName;
   private long ordinalBase;
   private long addressTableEntries;
   private long numberOfNames;
   private long exportAddressTableRva;
   private long nameTableRva;
   private long ordinalTableRva;
-  private Set<Export> exportNames;
+  private Set<Export> exports;
 
   /**
-   * @param buffers
+   * Create a new exports object.
+   * 
+   * @param headerBuffer The exports header as a byte array.
+   * @param fileName The name of the parsed file. Why this is present in the exports section is
+   *        anyone's guess.
+   * @param exports The list of export names and ordinal values.
    */
-  public PEExports(ByteOrderBuffer headerBuffer, String fileName, Set<Export> exportNames) {
+  public PEExports(ByteOrderBuffer headerBuffer, String fileName, Set<Export> exports) {
     this.exportFlags = readFlags(headerBuffer);
     this.timestamp = readTimestamp(headerBuffer);
     this.version = readVersion(headerBuffer);
-    this.name = fileName;
+    this.fileName = fileName;
     this.ordinalBase = readOrdinalBase(headerBuffer);
     this.addressTableEntries = readAddressTableEntries(headerBuffer);
     this.numberOfNames = readNumberOfNames(headerBuffer);
     this.exportAddressTableRva = readExportAddressTableRva(headerBuffer);
     this.nameTableRva = readNameTableRva(headerBuffer);
     this.ordinalTableRva = readOrdinalTableRva(headerBuffer);
-    this.exportNames = exportNames;
+    this.exports = exports;
   }
 
   /**
