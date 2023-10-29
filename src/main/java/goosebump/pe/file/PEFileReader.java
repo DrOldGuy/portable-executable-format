@@ -60,7 +60,6 @@ public class PEFileReader implements AutoCloseable {
   private static final int EXPORT_HEADER_SIZE = 40;
   private static final int EXPORT_NUM_NAMES_OFFSET = 24;
   private static final int EXPORT_NAME_POINTER_RVA_ADDRESS = 32;
-  private static final int EXPORT_ORDINAL_BASE_OFFSET = 16;
   private static final int EXPORT_ORDINAL_TABLE_OFFSET = 36;
 
   private static final String READ = "r";
@@ -360,7 +359,7 @@ public class PEFileReader implements AutoCloseable {
 
     String fileName = readExportFileName(headerBuffer);
     Set<Export> exports = readExports(headerBuffer);
-    
+
     return new ExportBuffers(headerBuffer, fileName, exports);
   }
 
@@ -380,7 +379,7 @@ public class PEFileReader implements AutoCloseable {
       long nameAddress = namePointerTable.get(pos);
       String name = readString(nameAddress);
       int ordinal = ordinalTable.get(pos);
-      
+
       exports.add(new Export(name, ordinal));
     }
 
@@ -407,14 +406,6 @@ public class PEFileReader implements AutoCloseable {
     }
 
     return ordinals;
-  }
-
-  /**
-   * @param headerBuffer
-   * @return
-   */
-  private int readOrdinalBase(ByteOrderBuffer headerBuffer) {
-    return (int)headerBuffer.readUnsignedInt(EXPORT_ORDINAL_BASE_OFFSET);
   }
 
   /**
