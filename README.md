@@ -10,6 +10,8 @@ This does not completely parse the entire PE file. Currently the following is su
 
 If you need additional PE support, please fork this repo or create a pull request.
 
+This project was created based on this [documentation](https://learn.microsoft.com/en-us/windows/win32/debug/pe-format).
+
 ## Usage
 The easiest way to use this library is to call goosebump.pe.builder.PEFileBuilder.newPEFile. Pass the file name as a Path object. This method creates and returns a goosebump.pe.PEFile object with all data loaded.
 
