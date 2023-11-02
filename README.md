@@ -27,4 +27,4 @@ The parser has been nominally tested with Windows 10 PE Dynamic Link Libraries (
 Please feel free to submit a pull request!
 
 ## Unit Testing
-The astute (or casual) observer will note the complete lack of unit tests for this project. This is not by accident. Testing was done empirically using Windows-supplied DLLs. I'm not sure that unit testing will actually add anything useful. Unit tests can verify the validity of the methods, but not that the methods are correctly interpreting the real file data. This makes the value of unit tests quesionable -- hence no unit tests. If there's a problem, let me know. Maybe I'll change my mind... :)
+The astute (or casual) observer will note the almost complete lack of unit tests for this project. This is not by accident. Testing was done empirically using Windows-supplied DLLs. I'm not sure that unit testing will actually add anything useful. Unit tests can verify the validity of the methods, but not that the methods are correctly interpreting the real file data. This makes the value of unit tests quesionable -- hence no unit tests. If there's a problem, let me know. Maybe I'll change my mind... :)
