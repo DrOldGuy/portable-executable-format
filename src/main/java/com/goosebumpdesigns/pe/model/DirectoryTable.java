@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Value;
 
 /**
- * 
+ * This class holds file pointers into the PE resources. 
  */
 @Value
 @Builder

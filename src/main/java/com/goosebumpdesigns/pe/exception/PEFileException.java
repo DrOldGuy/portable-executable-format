@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 /**
- * 
+ * This is a generic file exception that is thrown by an error in a seek or read operation on the PE
+ * file.
  */
 @SuppressWarnings("serial")
 public class PEFileException extends PEException {
@@ -17,10 +18,17 @@ public class PEFileException extends PEException {
   public PEFileException() {
     super();
   }
-  
-  public PEFileException(IOException e, Path path, long offset, int length) {
-    super(String.format("Error reading %d bytes at offset %d in file %s.",
-        length, offset, path), e);
+
+  /**
+   * 
+   * @param cause
+   * @param path
+   * @param offset
+   * @param length
+   */
+  public PEFileException(IOException cause, Path path, long offset, int length) {
+    super(String.format("Error reading %d bytes at offset %d in file %s.", length, offset, path),
+        cause);
   }
 
   /**

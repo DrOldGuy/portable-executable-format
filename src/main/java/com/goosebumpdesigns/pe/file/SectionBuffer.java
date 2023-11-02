@@ -5,7 +5,8 @@ package com.goosebumpdesigns.pe.file;
 import java.nio.ByteOrder;
 
 /**
- * 
+ * This class contains data for a data section header. It is simply a {@link ByteOrderBuffer} with a
+ * different name to distinguish its usage.
  */
 public class SectionBuffer extends ByteOrderBuffer {
 

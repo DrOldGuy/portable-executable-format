@@ -5,7 +5,8 @@ package com.goosebumpdesigns.pe.model.type;
 import java.nio.ByteBuffer;
 
 /**
- * 
+ * These are the values of the "magic number", a field in the optional header that determines if the
+ * PE optional format is PE32 or PE32+ format.
  */
 public enum MagicNumber {
   // @formatter:off

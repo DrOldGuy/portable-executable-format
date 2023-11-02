@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * These can be combined in the characteristics flag field.
+ * These can be combined in the characteristics flag field found in the main PE header.
  */
 public enum HeaderCharacteristic {
   // @formatter:off
@@ -58,8 +58,8 @@ public enum HeaderCharacteristic {
   public static List<HeaderCharacteristic> allCharacteristicsIn(int flag) {
     List<HeaderCharacteristic> characteristics = new LinkedList<>();
 
-    for (HeaderCharacteristic ch : HeaderCharacteristic.values()) {
-      if (ch.isPresentIn(flag)) {
+    for(HeaderCharacteristic ch : HeaderCharacteristic.values()) {
+      if(ch.isPresentIn(flag)) {
         characteristics.add(ch);
       }
     }

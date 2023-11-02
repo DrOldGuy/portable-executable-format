@@ -3,7 +3,7 @@
 package com.goosebumpdesigns.pe.exception;
 
 /**
- * This class is the base class of all DLL exceptions. 
+ * This class is the base class of all PE file exceptions. 
  */
 @SuppressWarnings("serial")
 public class PEException extends RuntimeException {

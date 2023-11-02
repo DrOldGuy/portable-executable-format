@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 
+ * This defines the valid values of the characteristic field in the optional header.
  */
 public enum OptionalHeaderCharacteristic {
   // @formatter:off
@@ -67,8 +67,8 @@ public enum OptionalHeaderCharacteristic {
   public static List<OptionalHeaderCharacteristic> allCharacteristicsIn(int flag) {
     List<OptionalHeaderCharacteristic> characteristics = new LinkedList<>();
 
-    for (OptionalHeaderCharacteristic characteristic : OptionalHeaderCharacteristic.values()) {
-      if (characteristic.isPresentIn(flag)) {
+    for(OptionalHeaderCharacteristic characteristic : OptionalHeaderCharacteristic.values()) {
+      if(characteristic.isPresentIn(flag)) {
         characteristics.add(characteristic);
       }
     }

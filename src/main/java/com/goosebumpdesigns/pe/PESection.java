@@ -14,7 +14,9 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
- * Each
+ * Each data section has a header row in the Personal Executable file. This class contains the data
+ * read from a section row. Using the data in the section header table, the section can be entirely
+ * read from the file. Currently, only the exports section is loaded from the file data.
  */
 @Getter
 @ToString
@@ -47,8 +49,9 @@ public class PESection {
   private List<SectionCharacteristic> characteristics;
 
   /**
-   * @param sectionTableBuffer
-   * @param sectionOffset
+   * Load the section header data from the given section buffer.
+   * 
+   * @param sectionBuffer The section table header.
    */
   public PESection(SectionBuffer sectionBuffer) {
     name = readSectionName(sectionBuffer);
@@ -69,7 +72,7 @@ public class PESection {
    */
   private List<SectionCharacteristic> readCharacteristics(SectionBuffer sectionBuffer) {
     FieldData data = sectionData.get(SectionField.CHARACTERISTICS);
-    int flags = sectionBuffer.readInt(data.getOffset());
+    int flags = sectionBuffer.getInt(data.getOffset());
     return SectionCharacteristic.allCharacteristicsIn(flags);
   }
 
@@ -79,7 +82,7 @@ public class PESection {
    */
   private int readNumberOfLineNumbers(SectionBuffer sectionBuffer) {
     FieldData data = sectionData.get(SectionField.NUMBER_OF_LINE_NUMBERS);
-    return sectionBuffer.readUnsignedShort(data.getOffset());
+    return sectionBuffer.getUnsignedShort(data.getOffset());
   }
 
   /**
@@ -88,7 +91,7 @@ public class PESection {
    */
   private int readNumberOfRelocations(SectionBuffer sectionBuffer) {
     FieldData data = sectionData.get(SectionField.NUMBER_OF_RELOCATIONS);
-    return sectionBuffer.readUnsignedShort(data.getOffset());
+    return sectionBuffer.getUnsignedShort(data.getOffset());
   }
 
   /**
@@ -97,7 +100,7 @@ public class PESection {
    */
   private long readLineNumbersPointer(SectionBuffer sectionBuffer) {
     FieldData data = sectionData.get(SectionField.POINTER_TO_LINE_NUMBERS);
-    return sectionBuffer.readUnsignedInt(data.getOffset());
+    return sectionBuffer.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -106,7 +109,7 @@ public class PESection {
    */
   private long readRelocationsPointer(SectionBuffer sectionBuffer) {
     FieldData data = sectionData.get(SectionField.POINTER_TO_RELOCATIONS);
-    return sectionBuffer.readUnsignedInt(data.getOffset());
+    return sectionBuffer.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -115,7 +118,7 @@ public class PESection {
    */
   private long readRawDataPointer(SectionBuffer sectionBuffer) {
     FieldData data = sectionData.get(SectionField.POINTER_TO_RAW_DATA);
-    return sectionBuffer.readUnsignedInt(data.getOffset());
+    return sectionBuffer.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -124,7 +127,7 @@ public class PESection {
    */
   private long readRawDataSize(SectionBuffer sectionBuffer) {
     FieldData data = sectionData.get(SectionField.SIZE_OF_RAW_DATA);
-    return sectionBuffer.readUnsignedInt(data.getOffset());
+    return sectionBuffer.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -133,7 +136,7 @@ public class PESection {
    */
   private long readVirtualAddress(SectionBuffer sectionBuffer) {
     FieldData data = sectionData.get(SectionField.VIRTUAL_ADDRESS);
-    return sectionBuffer.readUnsignedInt(data.getOffset());
+    return sectionBuffer.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -142,7 +145,7 @@ public class PESection {
    */
   private long readVirtualSize(SectionBuffer sectionBuffer) {
     FieldData data = sectionData.get(SectionField.VIRTUAL_SIZE);
-    return sectionBuffer.readUnsignedInt(data.getOffset());
+    return sectionBuffer.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -152,7 +155,7 @@ public class PESection {
    */
   private String readSectionName(SectionBuffer sectionBuffer) {
     FieldData data = sectionData.get(SectionField.NAME);
-    byte[] buffer = sectionBuffer.bytes(data.getOffset(), data.getSize());
+    byte[] buffer = sectionBuffer.getBytes(data.getOffset(), data.getSize());
 
     for(int size = 0; size < buffer.length; size++) {
       if(buffer[size] == 0) {

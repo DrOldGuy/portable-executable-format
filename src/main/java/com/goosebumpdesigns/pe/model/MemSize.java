@@ -6,7 +6,8 @@ import java.math.BigInteger;
 import lombok.Value;
 
 /**
- * 
+ * This class contains a reserve and commit size. (This means something in the context of Portable
+ * Executable file formats.)
  */
 @Value
 public class MemSize {

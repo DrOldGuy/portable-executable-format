@@ -10,7 +10,7 @@ import com.goosebumpdesigns.pe.model.type.FieldData;
 import com.goosebumpdesigns.pe.model.type.OptionalHeaderField;
 
 /**
- * 
+ * This class defines the field offsets and sizes of the optional header of a PE32+ file.
  */
 public class OptionalHeaderPlus extends PEOptionalHeader {
   // @formatter:off
@@ -74,7 +74,8 @@ public class OptionalHeaderPlus extends PEOptionalHeader {
   }
 
   /**
-   * 
+   * Returns the field data given the field. This is called by the base class
+   * ({@link PEOptionalHeader}) to load field definitions.
    */
   @Override
   protected FieldData dataForField(OptionalHeaderField field) {

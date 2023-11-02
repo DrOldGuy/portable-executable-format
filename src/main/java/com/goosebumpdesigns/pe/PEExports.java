@@ -77,7 +77,7 @@ public class PEExports {
    */
   private long readOrdinalTableRva(ByteOrderBuffer header) {
     FieldData data = fields.get(ExportDirectoryField.ORDINAL_TABLE_RVA);
-    return header.readUnsignedInt(data.getOffset());
+    return header.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -86,7 +86,7 @@ public class PEExports {
    */
   private long readNameTableRva(ByteOrderBuffer header) {
     FieldData data = fields.get(ExportDirectoryField.NAME_POINTER_RVA);
-    return header.readUnsignedInt(data.getOffset());
+    return header.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -95,7 +95,7 @@ public class PEExports {
    */
   private long readExportAddressTableRva(ByteOrderBuffer header) {
     FieldData data = fields.get(ExportDirectoryField.EXPORT_ADDRESS_TABLE_RVA);
-    return header.readUnsignedInt(data.getOffset());
+    return header.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -104,7 +104,7 @@ public class PEExports {
    */
   private long readNumberOfNames(ByteOrderBuffer header) {
     FieldData data = fields.get(ExportDirectoryField.NUMBER_OF_NAME_POINTERS);
-    return header.readUnsignedInt(data.getOffset());
+    return header.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -113,7 +113,7 @@ public class PEExports {
    */
   private long readAddressTableEntries(ByteOrderBuffer header) {
     FieldData data = fields.get(ExportDirectoryField.NUMBER_OF_ADDRESS_TABLE_ENTRIES);
-    return header.readUnsignedInt(data.getOffset());
+    return header.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -122,7 +122,7 @@ public class PEExports {
    */
   private long readOrdinalBase(ByteOrderBuffer header) {
     FieldData data = fields.get(ExportDirectoryField.ORDINAL_BASE);
-    return header.readUnsignedInt(data.getOffset());
+    return header.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -142,7 +142,7 @@ public class PEExports {
    */
   private int readVersionMajor(ByteOrderBuffer headerBuffer) {
     FieldData data = fields.get(ExportDirectoryField.MAJOR_VERSION);
-    return headerBuffer.readUnsignedShort(data.getOffset());
+    return headerBuffer.getUnsignedShort(data.getOffset());
   }
 
   /**
@@ -151,7 +151,7 @@ public class PEExports {
    */
   private int readVersionMinor(ByteOrderBuffer headerBuffer) {
     FieldData data = fields.get(ExportDirectoryField.MINOR_VERSION);
-    return headerBuffer.readUnsignedShort(data.getOffset());
+    return headerBuffer.getUnsignedShort(data.getOffset());
   }
 
   /**
@@ -160,7 +160,7 @@ public class PEExports {
    */
   private LocalDateTime readTimestamp(ByteOrderBuffer headerBuffer) {
     FieldData data = fields.get(ExportDirectoryField.TIMESTAMP);
-    return headerBuffer.readTimestamp(data.getOffset());
+    return headerBuffer.getTimestamp(data.getOffset());
   }
 
   /**
@@ -169,7 +169,7 @@ public class PEExports {
    */
   private int readFlags(ByteOrderBuffer headerBuffer) {
     FieldData data = fields.get(ExportDirectoryField.EXPORT_FLAGS);
-    int flags = headerBuffer.readInt(data.getOffset());
+    int flags = headerBuffer.getInt(data.getOffset());
 
     if(flags != 0) {
       throw new PEFileException("Export flags must be zero! Was: " + flags);

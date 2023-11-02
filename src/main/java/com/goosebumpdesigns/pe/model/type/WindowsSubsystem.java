@@ -3,7 +3,7 @@
 package com.goosebumpdesigns.pe.model.type;
 
 /**
- * 
+ * This class defines the Windows subsystem values used in the Personal Executable optional header.
  */
 public enum WindowsSubsystem {
   // @formatter:off

@@ -5,7 +5,20 @@ package com.goosebumpdesigns.pe.file;
 import java.util.Iterator;
 
 /**
+ * This class iterates over the section header table buffer, providing sub-buffers for each section.
+ * It allows you to do this:
  * 
+ * <pre>
+ * <code>
+ * byte[] sectionTableBytes = (load section table header byte array)
+ * ByteOrderBuffer byteOrderBuffer = new ByteOrderBuffer(sectionTableBytes, byteOrder);
+ * SectionTableBuffer sectionTableBuffer = new SectionTableBuffer(byteOrderBuffer, numSections, sectionSize);
+ * 
+ * for(SectionBuffer : sectionTableBuffer) {
+ *   // do something here...
+ * }
+ * </code>
+ * </pre>
  */
 public class SectionTableBuffer implements Iterable<SectionBuffer> {
   private ByteOrderBuffer sectionTableBuffer;
@@ -15,9 +28,10 @@ public class SectionTableBuffer implements Iterable<SectionBuffer> {
   /**
    * Create the section table buffer.
    * 
-   * @param sectionTableBuffer
-   * @param numberOfSections
-   * @param sectionSize
+   * @param sectionTableBuffer The {@link ByteOrderBuffer} that contains the section header data for
+   *        all sections.
+   * @param numberOfSections The number of sections.
+   * @param sectionSize The size of each section.
    */
   public SectionTableBuffer(ByteOrderBuffer sectionTableBuffer, int numberOfSections,
       int sectionSize) {
@@ -26,6 +40,10 @@ public class SectionTableBuffer implements Iterable<SectionBuffer> {
     this.numberOfSections = numberOfSections;
   }
 
+  /**
+   * This returns the section buffer iterator. It can be used in an enhanced for loop as described
+   * in the class overview.
+   */
   @Override
   public Iterator<SectionBuffer> iterator() {
     return new SectionIterator(sectionTableBuffer, numberOfSections, sectionSize);
@@ -64,7 +82,7 @@ public class SectionTableBuffer implements Iterable<SectionBuffer> {
      */
     @Override
     public SectionBuffer next() {
-      byte[] bytes = sectionTableBuffer.bytes(curSection++ * sectionSize, sectionSize);
+      byte[] bytes = sectionTableBuffer.getBytes(curSection++ * sectionSize, sectionSize);
       SectionBuffer buf = new SectionBuffer(bytes, sectionTableBuffer.getByteOrder());
       return buf;
     }

@@ -3,7 +3,7 @@
 package com.goosebumpdesigns.pe.model.type;
 
 /**
- * 
+ * These define the fields found in the export directory of the PE file.
  */
 public enum ExportDirectoryField {
   // @formatter:off

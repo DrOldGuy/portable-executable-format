@@ -3,7 +3,7 @@
 package com.goosebumpdesigns.pe.model.type;
 
 /**
- * 
+ * These are the fields in a PE data section.
  */
 public enum SectionField {
   // @formatter:off

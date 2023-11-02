@@ -5,13 +5,13 @@ package com.goosebumpdesigns.pe.model;
 import lombok.Value;
 
 /**
- * 
+ * This class stores an ordinal value along with a name for the exports table.
  */
 @Value
-public class Export implements Comparable<Export>{
+public class Export implements Comparable<Export> {
   private String name;
   private int ordinal;
-  
+
   /**
    * 
    * @param that

@@ -7,13 +7,17 @@ import com.goosebumpdesigns.pe.file.SectionBuffer;
 import com.goosebumpdesigns.pe.file.SectionTableBuffer;
 
 /**
- * 
+ * This class represents the section header table. It is itself a Map that maps the section name to
+ * the section data.
  */
 @SuppressWarnings("serial")
 public class PESectionTable extends TreeMap<String, PESection> {
 
   /**
-   * @param sectionTableBuffer
+   * Load the section header data into {@link PESection} objects and add them to the map in this
+   * object.
+   * 
+   * @param sectionTableBuffer The section table buffer.
    */
   public PESectionTable(SectionTableBuffer sectionTableBuffer) {
     for(SectionBuffer buffer : sectionTableBuffer) {

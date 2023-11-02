@@ -15,12 +15,19 @@ import com.goosebumpdesigns.pe.model.type.MagicNumber;
 import com.goosebumpdesigns.pe.model.type.OptionalHeaderCharacteristic;
 import com.goosebumpdesigns.pe.model.type.OptionalHeaderField;
 import com.goosebumpdesigns.pe.model.type.WindowsSubsystem;
+import com.goosebumpdesigns.pe.optionalheader.OptionalHeaderFactory;
+import com.goosebumpdesigns.pe.optionalheader.OptionalHeaderPlus;
+import com.goosebumpdesigns.pe.optionalheader.OptionalHeaderStd;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
 /**
- * 
+ * This class contains data from the optional header in the Personal Executable file. The optional
+ * header has 2 forms: PE32 and PE32+. The PE32 form is specified in class {@link OptionalHeaderStd}
+ * and the PE32+ form is specified in class {@link OptionalHeaderPlus}. The DLL or .exe file has a
+ * value in the optional header that tells which header to use. You can use the
+ * {@link OptionalHeaderFactory} class to choose the correct one.
  */
 @Getter
 @ToString
@@ -56,6 +63,12 @@ public abstract class PEOptionalHeader {
   private DirectoryTable directoryTable;
 
   /**
+   * This method loads the instance variables from the byte array buffer read from the Portable
+   * Executable file. It is called by a derived class' constructor ({@link OptionalHeaderStd} or
+   * {@link OptionalHeaderPlus}). The reason for this is that the byte array field offsets are
+   * loaded in each derived class. If the buffer is read in this (superclass) constructor, it would
+   * be read before the field definitions are loaded in the subclass.
+   * 
    * @param buffer
    */
   protected void parseAndLoadOptionalHeader(ByteOrderBuffer buffer) {
@@ -138,8 +151,8 @@ public abstract class PEOptionalHeader {
    */
   private Directory loadDirectory(ByteOrderBuffer buffer, OptionalHeaderField name) {
     FieldData data = dataForField(name);
-    long address = buffer.readUnsignedInt(data.getOffset());
-    long size = buffer.readUnsignedInt(data.getOffset() + Integer.BYTES);
+    long address = buffer.getUnsignedInt(data.getOffset());
+    long size = buffer.getUnsignedInt(data.getOffset() + Integer.BYTES);
 
     return new Directory(address, size);
   }
@@ -216,7 +229,7 @@ public abstract class PEOptionalHeader {
    */
   private long loadNumberOfRvaAndSizes(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.NUMBER_OF_RVA_AND_SIZES);
-    return buffer.readUnsignedInt(data.getOffset());
+    return buffer.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -225,9 +238,9 @@ public abstract class PEOptionalHeader {
    */
   private long loadLoaderFlags(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.LOADER_FLAGS);
-    long flags = buffer.readUnsignedInt(data.getOffset());
+    long flags = buffer.getUnsignedInt(data.getOffset());
 
-    if (flags != 0) {
+    if(flags != 0) {
       throw new IllegalStateException("Loader flags must be zero!");
     }
 
@@ -273,12 +286,12 @@ public abstract class PEOptionalHeader {
   private BigInteger readUnsignedLongOrInt(ByteOrderBuffer buffer, OptionalHeaderField field) {
     FieldData data = dataForField(field);
 
-    if (data.getSize() == Integer.BYTES) {
-      long value = buffer.readUnsignedInt(data.getOffset());
+    if(data.getSize() == Integer.BYTES) {
+      long value = buffer.getUnsignedInt(data.getOffset());
       return new BigInteger(Long.toString(value));
     }
 
-    return buffer.readUnsignedLong(data.getOffset());
+    return buffer.getUnsignedLong(data.getOffset());
   }
 
   /**
@@ -287,7 +300,7 @@ public abstract class PEOptionalHeader {
    */
   private List<OptionalHeaderCharacteristic> loadCharacteristics(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.DLL_CHARACTERISTICS);
-    int value = buffer.readUnsignedShort(data.getOffset());
+    int value = buffer.getUnsignedShort(data.getOffset());
 
     return OptionalHeaderCharacteristic.allCharacteristicsIn(value);
   }
@@ -298,7 +311,7 @@ public abstract class PEOptionalHeader {
    */
   private WindowsSubsystem loadSubsystem(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.SUBSYSTEM);
-    int value = buffer.readUnsignedShort(data.getOffset());
+    int value = buffer.getUnsignedShort(data.getOffset());
     return WindowsSubsystem.valueOf(value);
   }
 
@@ -308,7 +321,7 @@ public abstract class PEOptionalHeader {
    */
   private long loadChecksum(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.CHECKSUM);
-    return buffer.readUnsignedInt(data.getOffset());
+    return buffer.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -317,7 +330,7 @@ public abstract class PEOptionalHeader {
    */
   private long loadHeaderSize(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.SIZE_OF_HEADERS);
-    return buffer.readUnsignedInt(data.getOffset());
+    return buffer.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -326,7 +339,7 @@ public abstract class PEOptionalHeader {
    */
   private long loadImageSize(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.SIZE_OF_IMAGE);
-    return buffer.readUnsignedInt(data.getOffset());
+    return buffer.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -335,9 +348,9 @@ public abstract class PEOptionalHeader {
    */
   private long loadWin32VersionValue(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.WIN32_VERSION_VALUE);
-    long value = buffer.readUnsignedInt(data.getOffset());
+    long value = buffer.getUnsignedInt(data.getOffset());
 
-    if (value != 0) {
+    if(value != 0) {
       throw new IllegalStateException("Win32 version must be zero!");
     }
 
@@ -350,7 +363,7 @@ public abstract class PEOptionalHeader {
    */
   private int loadMinorSubsystemVersion(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.MINOR_SUBSYSTEM_VERSION);
-    return buffer.readUnsignedShort(data.getOffset());
+    return buffer.getUnsignedShort(data.getOffset());
   }
 
   /**
@@ -359,7 +372,7 @@ public abstract class PEOptionalHeader {
    */
   private int loadMajorSubsystemVersion(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.MAJOR_SUBSYSTEM_VERSION);
-    return buffer.readUnsignedShort(data.getOffset());
+    return buffer.getUnsignedShort(data.getOffset());
   }
 
   /**
@@ -368,7 +381,7 @@ public abstract class PEOptionalHeader {
    */
   private int loadMinorImageVersion(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.MINOR_IMAGE_VERSION);
-    return buffer.readUnsignedShort(data.getOffset());
+    return buffer.getUnsignedShort(data.getOffset());
   }
 
   /**
@@ -377,7 +390,7 @@ public abstract class PEOptionalHeader {
    */
   private int loadMajorImageVersion(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.MAJOR_IMAGE_VERSION);
-    return buffer.readUnsignedShort(data.getOffset());
+    return buffer.getUnsignedShort(data.getOffset());
   }
 
   /**
@@ -386,7 +399,7 @@ public abstract class PEOptionalHeader {
    */
   private int loadMinorOperatingSystemVersion(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.MINOR_OPERATING_SYSTEM_VERSION);
-    return buffer.readUnsignedShort(data.getOffset());
+    return buffer.getUnsignedShort(data.getOffset());
   }
 
   /**
@@ -395,7 +408,7 @@ public abstract class PEOptionalHeader {
    */
   private int loadMajorOperatingSystemVersion(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.MAJOR_OPERATING_SYSTEM_VERSION);
-    return buffer.readUnsignedShort(data.getOffset());
+    return buffer.getUnsignedShort(data.getOffset());
   }
 
   /**
@@ -404,7 +417,7 @@ public abstract class PEOptionalHeader {
    */
   private long loadFileAllignment(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.FILE_ALIGNMENT);
-    return buffer.readUnsignedInt(data.getOffset());
+    return buffer.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -413,7 +426,7 @@ public abstract class PEOptionalHeader {
    */
   private long loadSectionAlignment(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.SECTION_ALIGNMENT);
-    return buffer.readUnsignedInt(data.getOffset());
+    return buffer.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -422,7 +435,7 @@ public abstract class PEOptionalHeader {
    */
   private BigInteger loadImageBase(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.IMAGE_BASE);
-    return buffer.readUnsignedLong(data.getOffset());
+    return buffer.getUnsignedLong(data.getOffset());
   }
 
   /**
@@ -431,7 +444,7 @@ public abstract class PEOptionalHeader {
    */
   private long loadDataBaseAddress(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.BASE_OF_DATA);
-    return Objects.nonNull(data) ? buffer.readUnsignedInt(data.getOffset()) : 0;
+    return Objects.nonNull(data) ? buffer.getUnsignedInt(data.getOffset()) : 0;
   }
 
   /**
@@ -440,7 +453,7 @@ public abstract class PEOptionalHeader {
    */
   private long loadCodeBaseAddress(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.BASE_OF_CODE);
-    return buffer.readUnsignedInt(data.getOffset());
+    return buffer.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -449,7 +462,7 @@ public abstract class PEOptionalHeader {
    */
   private long loadEntryPointAddress(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.ADDRESS_OF_ENTRY_POINT);
-    return buffer.readUnsignedInt(data.getOffset());
+    return buffer.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -458,7 +471,7 @@ public abstract class PEOptionalHeader {
    */
   private long loadUninitializedDataSize(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.SIZE_OF_UNINITIALIZED_DATA);
-    return buffer.readUnsignedInt(data.getOffset());
+    return buffer.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -467,7 +480,7 @@ public abstract class PEOptionalHeader {
    */
   private long loadInitializedDataSize(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.SIZE_OF_INITIALIZED_DATA);
-    return buffer.readUnsignedInt(data.getOffset());
+    return buffer.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -476,7 +489,7 @@ public abstract class PEOptionalHeader {
    */
   private long loadCodeSize(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.SIZE_OF_CODE);
-    return buffer.readUnsignedInt(data.getOffset());
+    return buffer.getUnsignedInt(data.getOffset());
   }
 
   /**
@@ -485,7 +498,7 @@ public abstract class PEOptionalHeader {
    */
   private int loadMinorLinkerVersion(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.MINOR_LINKER_VERSION);
-    return buffer.readUnsignedByte(data.getOffset());
+    return buffer.getUnsignedByte(data.getOffset());
   }
 
   /**
@@ -494,7 +507,7 @@ public abstract class PEOptionalHeader {
    */
   private int loadMajorLinkerVersion(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.MAJOR_LINKER_VERSION);
-    return buffer.readUnsignedByte(data.getOffset());
+    return buffer.getUnsignedByte(data.getOffset());
   }
 
   /**
@@ -503,7 +516,7 @@ public abstract class PEOptionalHeader {
    */
   private MagicNumber loadMagicNumber(ByteOrderBuffer buffer) {
     FieldData data = dataForField(OptionalHeaderField.MAGIC_NUMBER);
-    int value = buffer.readUnsignedShort(data.getOffset());
+    int value = buffer.getUnsignedShort(data.getOffset());
 
     return MagicNumber.valueOf(value);
   }

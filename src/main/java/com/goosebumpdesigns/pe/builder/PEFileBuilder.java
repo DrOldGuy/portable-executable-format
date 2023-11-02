@@ -15,9 +15,16 @@ import com.goosebumpdesigns.pe.file.PEFileReader.ExportBuffers;
 import com.goosebumpdesigns.pe.optionalheader.OptionalHeaderFactory;
 
 /**
- * 
+ * This class reads data in the Personal Executable file and loads a {@link PEFile} object with the
+ * data. The static {@link #build(Path)} method is used for this.
  */
 public class PEFileBuilder {
+  /**
+   * Read the file data and return a {@link PEFile} object with the data.
+   * 
+   * @param path The path to the PE file on the local file system.
+   * @return A {@link PEFile} object.
+   */
   public static PEFile build(Path path) {
     return new PEFileBuilder().newPEFile(path);
   }
@@ -50,7 +57,7 @@ public class PEFileBuilder {
    */
   private PEExports readExports(PEFileReader reader) {
     ExportBuffers buffers = reader.readExportBuffers();
-    return new PEExports(buffers.getHeader(), buffers.getFileName(), buffers.getExportNames());
+    return new PEExports(buffers.getHeader(), buffers.getFileName(), buffers.getExports());
   }
 
   /**
@@ -69,7 +76,7 @@ public class PEFileBuilder {
    * @return
    */
   private PEOptionalHeader readOptionalHeader(PEFileReader reader) {
-    ByteOrderBuffer buffer = reader.readOptionalBuffer();
+    ByteOrderBuffer buffer = reader.readOptionalHeaderBuffer();
     return OptionalHeaderFactory.createOptionalHeader(buffer);
   }
 

@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 
+ * These values define the characteristics of a data section in a PE file.
  */
 public enum SectionCharacteristic {
   // @formatter:off
@@ -92,8 +92,8 @@ public enum SectionCharacteristic {
   public static List<SectionCharacteristic> allCharacteristicsIn(int flag) {
     List<SectionCharacteristic> characteristics = new LinkedList<>();
 
-    for (SectionCharacteristic characteristic : SectionCharacteristic.values()) {
-      if (characteristic.isPresentIn(flag)) {
+    for(SectionCharacteristic characteristic : SectionCharacteristic.values()) {
+      if(characteristic.isPresentIn(flag)) {
         characteristics.add(characteristic);
       }
     }

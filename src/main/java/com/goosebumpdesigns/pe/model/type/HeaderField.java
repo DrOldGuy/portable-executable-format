@@ -3,7 +3,7 @@
 package com.goosebumpdesigns.pe.model.type;
 
 /**
- * 
+ * These define field names in the main PE header.
  */
 public enum HeaderField {
   MACHINE,

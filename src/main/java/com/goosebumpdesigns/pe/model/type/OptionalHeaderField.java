@@ -3,7 +3,8 @@
 package com.goosebumpdesigns.pe.model.type;
 
 /**
- * 
+ * These are the fields in the optional header of both the PE32 and PE32+ formats. Not all fields
+ * are available in all formats.
  */
 public enum OptionalHeaderField {
   // @formatter:off

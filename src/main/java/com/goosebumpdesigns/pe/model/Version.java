@@ -5,7 +5,7 @@ package com.goosebumpdesigns.pe.model;
 import lombok.Value;
 
 /**
- * 
+ * This class contains a major and minor version number.
  */
 @Value
 public class Version {

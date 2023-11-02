@@ -16,14 +16,15 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
- * 
+ * This contains the Portable Executable header values. A byte array is loaded from the file and
+ * supplied to this class.
  */
 @Getter
 @ToString
 @EqualsAndHashCode
 public class PEHeader {
   // @formatter:off
-  private static final Map<Enum<?>, FieldData> headerData = Map.ofEntries(
+  private static final Map<Enum<?>, FieldData> fields = Map.ofEntries(
       value(HeaderField.MACHINE, 0, 2), 
       value(HeaderField.NUMBER_OF_SECTIONS, 2, 2),
       value(HeaderField.TIME_DATE_STAMP, 4, 4), 
@@ -43,9 +44,10 @@ public class PEHeader {
   private List<HeaderCharacteristic> characteristics;
 
   /**
-   * Create and initialize the header object.
+   * Create and initialize the header object. This reads a byte buffer that contains the header
+   * data.
    * 
-   * @param buffer
+   * @param buffer The buffer to read.
    */
   public PEHeader(ByteOrderBuffer buffer) {
     machineType = readMachineType(buffer);
@@ -62,8 +64,8 @@ public class PEHeader {
    * @return
    */
   private List<HeaderCharacteristic> readCharacteristics(ByteOrderBuffer buffer) {
-    FieldData data = headerData.get(HeaderField.CHARACTERISTICS);
-    short value = buffer.readShort(data.getOffset());
+    FieldData data = fields.get(HeaderField.CHARACTERISTICS);
+    short value = buffer.getShort(data.getOffset());
     return HeaderCharacteristic.allCharacteristicsIn(value);
   }
 
@@ -72,8 +74,8 @@ public class PEHeader {
    * @return
    */
   private int readSizeOfOptionalHeader(ByteOrderBuffer buffer) {
-    FieldData data = headerData.get(HeaderField.SIZE_OF_OPTIONAL_HEADER);
-    return buffer.readUnsignedShort(data.getOffset());
+    FieldData data = fields.get(HeaderField.SIZE_OF_OPTIONAL_HEADER);
+    return buffer.getUnsignedShort(data.getOffset());
   }
 
   /**
@@ -81,8 +83,8 @@ public class PEHeader {
    * @return
    */
   private int readNumberOfSymbols(ByteOrderBuffer buffer) {
-    FieldData data = headerData.get(HeaderField.NUMBER_OF_SYMBOLS);
-    return buffer.readInt(data.getOffset());
+    FieldData data = fields.get(HeaderField.NUMBER_OF_SYMBOLS);
+    return buffer.getInt(data.getOffset());
   }
 
   /**
@@ -90,8 +92,8 @@ public class PEHeader {
    * @return
    */
   private int readSymbolTableOffset(ByteOrderBuffer buffer) {
-    FieldData data = headerData.get(HeaderField.POINTER_TO_SYMBOL_TABLE);
-    return buffer.readInt(data.getOffset());
+    FieldData data = fields.get(HeaderField.POINTER_TO_SYMBOL_TABLE);
+    return buffer.getInt(data.getOffset());
   }
 
   /**
@@ -103,8 +105,8 @@ public class PEHeader {
    * @return
    */
   private LocalDateTime readTimestamp(ByteOrderBuffer buffer) {
-    FieldData data = headerData.get(HeaderField.TIME_DATE_STAMP);
-    return buffer.readTimestamp(data.getOffset());
+    FieldData data = fields.get(HeaderField.TIME_DATE_STAMP);
+    return buffer.getTimestamp(data.getOffset());
   }
 
   /**
@@ -112,8 +114,8 @@ public class PEHeader {
    * @return
    */
   private int readNumberOfSections(ByteOrderBuffer buffer) {
-    FieldData data = headerData.get(HeaderField.NUMBER_OF_SECTIONS);
-    return buffer.readShort(data.getOffset());
+    FieldData data = fields.get(HeaderField.NUMBER_OF_SECTIONS);
+    return buffer.getShort(data.getOffset());
   }
 
   /**
@@ -121,8 +123,8 @@ public class PEHeader {
    * @return
    */
   private MachineType readMachineType(ByteOrderBuffer buffer) {
-    FieldData data = headerData.get(HeaderField.MACHINE);
-    int value = buffer.readShort(data.getOffset());
+    FieldData data = fields.get(HeaderField.MACHINE);
+    int value = buffer.getShort(data.getOffset());
     return MachineType.valueOf(value);
   }
 
